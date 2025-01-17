@@ -5,7 +5,9 @@ interface WebSocketMessage {
   data: any;
 }
 
-export const useWebSocket = (url: string) => {
+const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URL || 'ws://localhost:8000/ws';
+
+export const useWebSocket = (url: string = WEBSOCKET_URL) => {
   const [data, setData] = useState<any[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -21,13 +23,16 @@ export const useWebSocket = (url: string) => {
 
     ws.onmessage = (event) => {
       const message: WebSocketMessage = JSON.parse(event.data);
-      
+      console.log('Received message:', message);
       switch (message.type) {
         case 'initial_data':
           setData(message.data);
           break;
         case 'data_update':
           setData(prev => [...prev, message.data]);
+          break;
+        case 'stream':
+          setData(prev => [...prev, message]);
           break;
         default:
           console.log('Unknown message type:', message.type);
@@ -51,3 +56,6 @@ export const useWebSocket = (url: string) => {
     socket
   };
 };
+
+// Example usage in another component:
+// const { data, isConnected, socket } = useWebSocket();

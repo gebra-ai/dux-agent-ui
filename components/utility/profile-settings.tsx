@@ -122,11 +122,6 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
   )
   const [state, setState] = useState<any>({
     elasticSearchUrl: configuration?.meta?.elasticSearchUrl || "",
-    databaseType: configuration?.meta?.databaseType || "",
-    databaseHost: configuration?.meta?.databaseHost || "",
-    databaseUsername: configuration?.meta?.databaseUsername || "",
-    databasePassword: configuration?.meta?.databasePassword || "",
-    databasePort: configuration?.meta?.databasePort || "",
     databaseName: configuration?.meta?.databaseName || ""
   })
 
@@ -180,12 +175,12 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
       const CreateConfig = await createConfig({
         user_id: profile.user_id,
         meta: {
-          elasticSearchUrl: state.elasticSearchUrl,
-          databaseType: state.databaseType,
-          databaseHost: state.databaseHost,
-          databaseUsername: state.databaseUsername,
-          databasePassword: state.databasePassword,
-          databasePort: state.databasePort,
+          // elasticSearchUrl: state.elasticSearchUrl,
+          // databaseType: state.databaseType,
+          // databaseHost: state.databaseHost,
+          // databaseUsername: state.databaseUsername,
+          // databasePassword: state.databasePassword,
+          // databasePort: state.databasePort,
           databaseName: state.databaseName
         },
         type: "configuration",
@@ -198,11 +193,11 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
         user_id: profile.user_id,
         meta: {
           elasticSearchUrl: state.elasticSearchUrl,
-          databaseType: state.databaseType,
-          databaseHost: state.databaseHost,
-          databaseUsername: state.databaseUsername,
-          databasePassword: state.databasePassword,
-          databasePort: state.databasePort,
+          // databaseType: state.databaseType,
+          // databaseHost: state.databaseHost,
+          // databaseUsername: state.databaseUsername,
+          // databasePassword: state.databasePassword,
+          // databasePort: state.databasePort,
           databaseName: state.databaseName
         },
         type: "configuration",
@@ -788,46 +783,6 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
               </div>
               <div className="space-y-1">
                 <Label>Database connection</Label><br />
-                <Label >Database Type</Label>
-                <Input
-                  placeholder="Database Type"
-                  value={state["databaseType"]}
-                  onChange={e => updateState("databaseType", e.target.value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label >Database Host</Label>
-                <Input
-                  placeholder="Database Host"
-                  value={state["databaseHost"]}
-                  onChange={e => updateState("databaseHost", e.target.value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label >Database Username</Label>
-                <Input
-                  placeholder="Database Username"
-                  value={state["databaseUsername"]}
-                  onChange={e => updateState("databaseUsername", e.target.value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label >Database Password</Label>
-                <Input
-                  placeholder="Database Password"
-                  value={state["databasePassword"]}
-                  onChange={e => updateState("databasePassword", e.target.value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label >Database Port</Label>
-                <Input
-                  placeholder="Database Port"
-                  value={state["databasePort"]}
-                  onChange={e => updateState("databasePort", e.target.value)}
-                />
-              </div>
-              <div className="space-y-1">
                 <Label >Database Name</Label>
                 <Input
                   placeholder="Database Name"
@@ -835,6 +790,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
                   onChange={e => updateState("databaseName", e.target.value)}
                 />
               </div>
+              
             </TabsContent>
           </Tabs>
         </div>

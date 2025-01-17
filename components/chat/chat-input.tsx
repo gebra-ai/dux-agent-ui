@@ -16,7 +16,7 @@ import {
   IconX
 } from "@tabler/icons-react"
 import Image from "next/image"
-import { FC, useContext, useEffect, useRef, useState } from "react"
+import React, { FC, useContext, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { Input } from "../ui/input"
@@ -32,9 +32,48 @@ import { useWebSocket } from './chat-hooks/chat-websocket'
 
 interface ChatInputProps { }
 
+const ShowTerminalLogs = (props: any) => {
+  const { type, profile, setType } = props;
+  const { data, isConnected } = useWebSocket(process.env.NEXT_PUBLIC_WEBSOCKET_URL + '/' + profile?.user_id);
+  return (
+    <div className="relative w-full">
+      <div className={`${type != 1 ? "absolute w-full bottom-0" : ""}`}>
+        <div className="flex justify-between items-center p-2 mt-[7px] rounded-[6px] bg-background ">
+          <div className="flex">
+            <span className="font-bold">Terminal</span>
+            <span className={`absolute ml-[76px] mt-[3px] ${isConnected ? "text-green-500" : "text-red-500"}`}>
+              {isConnected ? <IconCircleCheck size={20} /> : <IconCircleX size={20} />}
+            </span>
+          </div>
+          <div className="flex">
+            {type == 1 && <IconCircleArrowRight size={20} onClick={() => setType(2)} className="mr-2 cursor-pointer" />}
+            {type == 2 && <IconChevronUp size={20} onClick={() => setType(3)} className="mr-2 cursor-pointer" />}
+            {type == 3 && <IconChevronDown size={20} onClick={() => setType(2)} className="mr-2 cursor-pointer" />}
+            {type != 1 && <IconX size={20} onClick={() => setType(1)} className="mr-2 cursor-pointer" />}
+          </div>
+        </div>
+
+        <div className={`space-y-2 p-2 border text-primary rounded ${type == 2 ? 'h-[300px]' : 'h-[600px]'} overflow-auto ${type != 1 ? "block " : "hidden"} bg-background`}>
+          {data.map((item, index) => (
+            // <div key={index} className="p-2 border rounded">
+            //   <pre>{JSON.stringify(item, null, 2)}</pre>
+            // </div>
+            <div key={index} className="">
+              <div className="">
+                {item.timestamp && <span className="text-sm">{new Date(item.timestamp * 1000).toLocaleString()} -</span>}
+                <span className="text-sm">: {item.data}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export const ChatInput: FC<ChatInputProps> = ({ }) => {
   const { t } = useTranslation()
-  const { data, isConnected } = useWebSocket(process.env.NEXT_PUBLIC_WEBSOCKET_URL+'');
+
   useHotkey("l", () => {
     handleFocusChatInput()
   })
@@ -68,12 +107,16 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
     assistantImages,
     newMessageFiles,
     chatFiles,
-    files
-  } = useContext(ChatbotUIContext)
+    files,
+    profile,
+  } = useContext(ChatbotUIContext);
+
+  const generatedFile = files.filter(file => file.description == "generated-file")
   const combinedChatFiles = [
     ...newMessageFiles.filter(
       file => !chatFiles.some(chatFile => chatFile.id === file.id)
     ),
+    ...generatedFile,
     ...chatFiles
   ]
   const {
@@ -245,11 +288,13 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
             size={32}
             onClick={() => fileInputRef.current?.click()}
           />
-          {combinedChatFiles.length > 0 && <IconFileSearch
+          {/* {combinedChatFiles.length > 0 &&  */}
+          <IconFileSearch
             className="absolute bottom-[12px] left-3 cursor-pointer p-1 hover:opacity-50 ml-[25px]"
             size={32}
             onClick={() => openFullFileViewer()}
-          />}
+          />
+          {/* } */}
 
           {/* Hidden input to select files from device */}
           <Input
@@ -266,7 +311,7 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
 
         <TextareaAutosize
           textareaRef={chatInputRef}
-          className={`ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-14 py-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${combinedChatFiles.length > 0 ? "pl-[75px]" : ""}`}
+          className={`ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-14 py-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${(combinedChatFiles.length > 0 || true) ? "pl-[75px]" : ""}`}
           placeholder={t(
             // `Ask anything. Type "@" for assistants, "/" for prompts, "#" for files, and "!" for tools.`
             `Ask anything. Type @  /  #  !`
@@ -304,38 +349,7 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
           )}
         </div>
       </div>
-      <div className="relative w-full">
-        <div className={`${type != 1 ? "absolute w-full bottom-0" : ""}`}>
-          <div className="flex justify-between items-center p-2 mt-[7px] rounded-[6px] bg-background ">
-            <div className="flex">
-              <span className="font-bold">Terminal</span>
-              <span className={`absolute ml-[76px] mt-[3px] ${isConnected ? "text-green-500" : "text-red-500"}`}>
-                {isConnected ? <IconCircleCheck size={20} /> : <IconCircleX size={20} />}
-              </span>
-            </div>
-            <div className="flex">
-              {type == 1 && <IconCircleArrowRight size={20} onClick={() => setType(2)} className="mr-2 cursor-pointer" />}
-              {type == 2 && <IconChevronUp size={20} onClick={() => setType(3)} className="mr-2 cursor-pointer" />}
-              {type == 3 && <IconChevronDown size={20} onClick={() => setType(2)} className="mr-2 cursor-pointer" />}
-              {type != 1 && <IconX size={20} onClick={() => setType(1)} className="mr-2 cursor-pointer" />}
-            </div>
-          </div>
-
-          <div className={`space-y-2 p-2 border text-primary rounded ${type == 2 ? 'h-[300px]' : 'h-[600px]'} overflow-auto ${type != 1 ? "block " : "hidden"} bg-background`}>
-            {data.map((item, index) => (
-              // <div key={index} className="p-2 border rounded">
-              //   <pre>{JSON.stringify(item, null, 2)}</pre>
-              // </div>
-              <div key={index} className="">
-                <div className="">
-                  {item.timestamp && <span className="text-sm">{new Date(item.timestamp * 1000).toLocaleString()} -</span>}
-                  <span className="text-sm">: {item.data}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      {profile?.user_id && <ShowTerminalLogs type={type} setType={setType} profile={profile} />}
       {open && <FileViewer open={open} isShowfull={true} onOpenChange={setOpen} fileList={combinedChatFiles} />}
     </>
   )
