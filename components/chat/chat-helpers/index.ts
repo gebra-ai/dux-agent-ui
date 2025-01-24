@@ -199,7 +199,8 @@ export const handleHostedChat = async (
   setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>,
   setFirstTokenReceived: React.Dispatch<React.SetStateAction<boolean>>,
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-  setToolInUse: React.Dispatch<React.SetStateAction<string>>
+  setToolInUse: React.Dispatch<React.SetStateAction<string>>,
+  current_chat_id: string
 ) => {
   const provider =
     modelData.provider === "openai" && profile.use_azure_openai
@@ -222,7 +223,8 @@ export const handleHostedChat = async (
     chatSettings: payload.chatSettings,
     messages: formattedMessages,
     customModelId: provider === "custom" ? modelData.hostedId : "",
-    user_id: profile.user_id
+    user_id: profile.user_id,
+    chat_id: current_chat_id
   }
 
   const response = await fetchChatResponse(
@@ -345,6 +347,7 @@ export const processResponse = async (
 }
 
 export const handleCreateChat = async (
+  id: string,
   chatSettings: ChatSettings,
   profile: Tables<"profiles">,
   selectedWorkspace: Tables<"workspaces">,
@@ -356,6 +359,7 @@ export const handleCreateChat = async (
   setChatFiles: React.Dispatch<React.SetStateAction<ChatFile[]>>
 ) => {
   const createdChat = await createChat({
+    id,
     user_id: profile.user_id,
     workspace_id: selectedWorkspace.id,
     assistant_id: selectedAssistant?.id || null,

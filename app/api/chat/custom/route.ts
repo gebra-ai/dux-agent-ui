@@ -10,11 +10,12 @@ export const runtime: ServerRuntime = "edge"
 
 export async function POST(request: Request) {
   const json = await request.json()
-  const { chatSettings, messages, customModelId, user_id } = json as {
+  const { chatSettings, messages, customModelId, user_id, chat_id } = json as {
     chatSettings: ChatSettings
     messages: any[]
     customModelId: string,
-    user_id: string
+    user_id: string,
+    chat_id: string
   }
 
   try {
@@ -35,9 +36,11 @@ export async function POST(request: Request) {
 
     const custom = new OpenAI({
       apiKey: customModel.api_key || "",
-      baseURL: customModel.base_url
+      baseURL: customModel.base_url,
+      defaultHeaders: {
+      'x-chat-id': chat_id
+      }
     })
-
     const response = await custom.chat.completions.create({
       model: chatSettings.model as ChatCompletionCreateParamsBase["model"],
       messages: messages as ChatCompletionCreateParamsBase["messages"],

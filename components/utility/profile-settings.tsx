@@ -22,6 +22,13 @@ import {
   IconLogout,
   IconUser
 } from "@tabler/icons-react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "../ui/select"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { FC, useCallback, useContext, useRef, useState } from "react"
@@ -121,8 +128,10 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
     profile?.openrouter_api_key || ""
   )
   const [state, setState] = useState<any>({
-    elasticSearchUrl: configuration?.meta?.elasticSearchUrl || "",
-    databaseName: configuration?.meta?.databaseName || ""
+    elasticSearchUrl: (configuration?.meta as { elasticSearchUrl?: string })?.elasticSearchUrl || "",
+    databaseName: (configuration?.meta as { databaseName?: string })?.databaseName || "",
+    gitusername: (configuration?.meta as { gitusername?: string })?.gitusername || "",
+    githubtoken: (configuration?.meta as { githubtoken?: string })?.githubtoken || "",
   })
 
   const updateState = (key: string, value: any) => {
@@ -173,6 +182,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
 
     if (!(configuration?.id)) {
       const CreateConfig = await createConfig({
+        chat_id:null,
         user_id: profile.user_id,
         meta: {
           // elasticSearchUrl: state.elasticSearchUrl,
@@ -181,14 +191,16 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
           // databaseUsername: state.databaseUsername,
           // databasePassword: state.databasePassword,
           // databasePort: state.databasePort,
-          databaseName: state.databaseName
+          databaseName: state.databaseName,
+          gitusername: state.gitusername,
+          githubtoken: state.githubtoken,
         },
         type: "configuration",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       })
       setconfiguration(CreateConfig);
-    }else{
+    } else {
       const updateConfig = await updateConfigDeatils(configuration.id, {
         user_id: profile.user_id,
         meta: {
@@ -198,7 +210,10 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
           // databaseUsername: state.databaseUsername,
           // databasePassword: state.databasePassword,
           // databasePort: state.databasePort,
-          databaseName: state.databaseName
+          databaseName: state.databaseName,
+          gitusername: state.gitusername,
+          githubtoken: state.githubtoken,
+
         },
         type: "configuration",
         created_at: new Date().toISOString(),
@@ -782,15 +797,49 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
                 />
               </div>
               <div className="space-y-1">
+                <Label>Github Username</Label>
+                <Input
+                  placeholder="Github Username"
+                  value={state["gitusername"]}
+                  onChange={e => updateState("gitusername", e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label>Github Token</Label>
+                <Input
+                  placeholder="Github Token"
+                  value={state["githubtoken"]}
+                  onChange={e => updateState("githubtoken", e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
                 <Label>Database connection</Label><br />
                 <Label >Database Name</Label>
-                <Input
+                {/* <Input
                   placeholder="Database Name"
                   value={state["databaseName"]}
                   onChange={e => updateState("databaseName", e.target.value)}
-                />
+                /> */}
+                <Select
+                  value={state["databaseName"]}
+                  onValueChange={(embeddingsProvider: "ecommerce.db" | "vacation_planner.db") => {
+                    updateState("databaseName", embeddingsProvider)
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue defaultValue="vacation_planner.db" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ecommerce.db">
+                      ecommerce.db
+                    </SelectItem>
+                    <SelectItem value="vacation_planner.db">
+                      vacation_planner.db
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              
+
             </TabsContent>
           </Tabs>
         </div>

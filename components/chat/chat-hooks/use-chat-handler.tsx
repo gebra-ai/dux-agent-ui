@@ -20,7 +20,8 @@ import {
   handleRetrieval,
   processResponse,
   validateChatSettings
-} from "../chat-helpers"
+} from "../chat-helpers";
+import { v4 as uuidv4 } from "uuid"
 
 export const useChatHandler = () => {
   const router = useRouter()
@@ -194,7 +195,7 @@ export const useChatHandler = () => {
     isRegeneration: boolean
   ) => {
     const startingInput = messageContent
-
+    debugger
     try {
       setUserInput("")
       setIsGenerating(true)
@@ -228,9 +229,9 @@ export const useChatHandler = () => {
       )
 
       let currentChat = selectedChat ? { ...selectedChat } : null
-
+      const current_chat_id = currentChat ?  currentChat.id  :uuidv4();
       const b64Images = newMessageImages.map(image => image.base64)
-
+      debugger
       let retrievedFileItems: Tables<"file_items">[] = []
 
       if (
@@ -333,13 +334,14 @@ export const useChatHandler = () => {
             setIsGenerating,
             setFirstTokenReceived,
             setChatMessages,
-            setToolInUse
+            setToolInUse,
+            current_chat_id
           )
         }
       }
-
       if (!currentChat) {
         currentChat = await handleCreateChat(
+          current_chat_id,
           chatSettings!,
           profile!,
           selectedWorkspace!,

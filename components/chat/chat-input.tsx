@@ -7,13 +7,14 @@ import {
   IconCirclePlus,
   IconPlayerStopFilled,
   IconSend,
-  IconFileSearch,
+  IconFile,
   IconCircleCheck,
   IconCircleX,
   IconCircleArrowRight,
   IconChevronUp,
   IconChevronDown,
-  IconX
+  IconX,
+  IconSettingsCheck
 } from "@tabler/icons-react"
 import Image from "next/image"
 import React, { FC, useContext, useEffect, useRef, useState } from "react"
@@ -21,6 +22,7 @@ import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { Input } from "../ui/input"
 import { FileViewer } from "./file-viewer"
+import { ChatConfig } from "./chat-config"
 import { TextareaAutosize } from "../ui/textarea-autosize"
 import { ChatCommandInput } from "./chat-command-input"
 import { ChatFilesDisplay } from "./chat-files-display"
@@ -79,9 +81,14 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
   })
 
   const [isTyping, setIsTyping] = useState<boolean>(false)
+  const [defaultshow, setDefaultShow] = useState<boolean>(false)
   const [open, setOpen] = useState<boolean>(false)
+  const [openConfig, setOpenConfig] = useState<boolean>(false)
   const [type, setType] = useState<Number>(1)
 
+  useEffect(() => {
+    setDefaultShow(true)
+  }, [])
   const {
     isAssistantPickerOpen,
     focusAssistant,
@@ -289,10 +296,15 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
             onClick={() => fileInputRef.current?.click()}
           />
           {/* {combinedChatFiles.length > 0 &&  */}
-          <IconFileSearch
+          <IconFile
             className="absolute bottom-[12px] left-3 cursor-pointer p-1 hover:opacity-50 ml-[25px]"
             size={32}
             onClick={() => openFullFileViewer()}
+          />
+          <IconSettingsCheck
+            className="absolute bottom-[12px] left-3 cursor-pointer p-1 hover:opacity-50 ml-[52px]"
+            size={32}
+            onClick={() => setOpenConfig(true)}
           />
           {/* } */}
 
@@ -311,7 +323,7 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
 
         <TextareaAutosize
           textareaRef={chatInputRef}
-          className={`ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-14 py-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${(combinedChatFiles.length > 0 || true) ? "pl-[75px]" : ""}`}
+          className={`ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring text-md flex w-full resize-none rounded-md border-none bg-transparent px-14 py-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${(combinedChatFiles.length > 0 || true) ? "pl-[99px]" : ""}`}
           placeholder={t(
             // `Ask anything. Type "@" for assistants, "/" for prompts, "#" for files, and "!" for tools.`
             `Ask anything. Type @  /  #  !`
@@ -341,7 +353,6 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
               )}
               onClick={() => {
                 if (!userInput) return
-
                 handleSendMessage(userInput, chatMessages, false)
               }}
               size={30}
@@ -349,8 +360,9 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
           )}
         </div>
       </div>
-      {profile?.user_id && <ShowTerminalLogs type={type} setType={setType} profile={profile} />}
+      {(profile?.user_id && defaultshow) && <ShowTerminalLogs type={type} setType={setType} profile={profile} />}
       {open && <FileViewer open={open} isShowfull={true} onOpenChange={setOpen} fileList={combinedChatFiles} />}
+      {openConfig && <ChatConfig open={openConfig} chat_id="" onOpenChange={setOpenConfig}/>}
     </>
   )
 }

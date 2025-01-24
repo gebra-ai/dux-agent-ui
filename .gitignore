@@ -1,0 +1,9 @@
+node_modules
+.history
+.next
+!.env.local.example
+.env*
+.DS_Store
+public
+supabase/config.toml
+!/supabase/types.ts

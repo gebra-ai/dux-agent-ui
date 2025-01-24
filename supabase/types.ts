@@ -494,6 +494,7 @@ export type Database = {
       }
       configuration: {
         Row: {
+          chat_id: string | null
           created_at: string
           id: string
           meta: Json
@@ -502,6 +503,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          chat_id?: string | null
           created_at?: string
           id?: string
           meta: Json
@@ -510,6 +512,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          chat_id?: string | null
           created_at?: string
           id?: string
           meta?: Json
@@ -517,7 +520,15 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "configuration_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       file_items: {
         Row: {
