@@ -822,18 +822,18 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
                 /> */}
                 <Select
                   value={state["databaseName"]}
-                  onValueChange={(embeddingsProvider: "ecommerce.db" | "vacation_planner.db") => {
+                  onValueChange={(embeddingsProvider: "ecommerce.db" | "vacationplanner.db") => {
                     updateState("databaseName", embeddingsProvider)
                   }}
                 >
                   <SelectTrigger>
-                    <SelectValue defaultValue="vacation_planner.db" />
+                    <SelectValue defaultValue="vacationplanner.db" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="ecommerce.db">
                       ecommerce.db
                     </SelectItem>
-                    <SelectItem value="vacation_planner.db">
+                    <SelectItem value="vacationplanner.db">
                       vacation_planner.db
                     </SelectItem>
                   </SelectContent>

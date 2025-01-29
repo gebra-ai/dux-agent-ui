@@ -92,7 +92,6 @@ export const FileViewer: FC<FileViewerProps> = (props) => {
         setDeleteFileType(0)
         const fileData: any = await getFileWorkspacesByWorkspaceId(workspaceId)
         setFiles(fileData.files)
-        debugger
         if(highLight == deleteFile.id){
             setHighLight('')
             loadFile(fileData?.files?.[0] ?? {})

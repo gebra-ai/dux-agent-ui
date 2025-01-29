@@ -12,10 +12,10 @@ import { ReactNode } from "react"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
-const APP_NAME = "Gebra Agent"
-const APP_DEFAULT_TITLE = "Gebra Agent"
-const APP_TITLE_TEMPLATE = "%s - Gebra Agent"
-const APP_DESCRIPTION = "Gebra Agent PWA!"
+const APP_NAME = "Gebra AI"
+const APP_DEFAULT_TITLE = "Gebra AI"
+const APP_TITLE_TEMPLATE = "%s - Gebra AI"
+const APP_DESCRIPTION = "Gebra AI PWA!"
 
 interface RootLayoutProps {
   children: ReactNode
@@ -26,6 +26,14 @@ interface RootLayoutProps {
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
+  icons: {
+    icon: [
+      { url: '/favicon.ico' }
+    ],
+    apple: [
+      { url: '/gebra-logo.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   title: {
     default: APP_DEFAULT_TITLE,
     template: APP_TITLE_TEMPLATE

@@ -1,10 +1,10 @@
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
-  enabled: process.env.ANALYZE === "true"
-})
+  enabled: process.env.ANALYZE === "true",
+});
 
 const withPWA = require("next-pwa")({
-  dest: "public"
-})
+  dest: "public",
+});
 
 module.exports = withBundleAnalyzer(
   withPWA({
@@ -13,20 +13,29 @@ module.exports = withBundleAnalyzer(
       remotePatterns: [
         {
           protocol: "http",
-          hostname: "localhost"
+          hostname: "localhost",
         },
         {
           protocol: "http",
-          hostname: "127.0.0.1"
+          hostname: "127.0.0.1",
         },
         {
           protocol: "https",
-          hostname: "**"
-        }
-      ]
+          hostname: "**",
+        },
+      ],
     },
     experimental: {
-      serverComponentsExternalPackages: ["sharp", "onnxruntime-node"]
-    }
+      serverComponentsExternalPackages: ["sharp", "onnxruntime-node"],
+    },
+    async redirects() {
+      return [
+        {
+          source: "/",
+          destination: "/login",
+          permanent: false, // Set to `true` for a permanent redirect
+        },
+      ];
+    },
   })
-)
+);

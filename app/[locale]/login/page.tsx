@@ -11,7 +11,15 @@ import { cookies, headers } from "next/headers"
 import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
-  title: "Login"
+  title: "Login",
+  icons: {
+    icon: [
+      { url: '/favicon.ico' }
+    ],
+    apple: [
+      { url: '/gebra-logo.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
 }
 
 export default async function Login({
@@ -167,7 +175,7 @@ export default async function Login({
         className="animate-in text-foreground flex w-full flex-1 flex-col justify-center gap-2"
         action={signIn}
       >
-        <Brand />
+        <Brand type="login" />
 
         <Label className="text-md mt-4" htmlFor="email">
           Email

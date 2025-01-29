@@ -2,13 +2,18 @@
 
 import Link from "next/link"
 import { FC } from "react"
-import { ChatbotUISVG } from "../icons/chatbotui-svg"
+// import GRAYLOGO from "../icons/Grayscale Transparent.png"
+// import LIGHTLOGO from "../icons/Transparent Logo.png"
+import Logo from "../icons/fill-gebra-icon"
+import { useTheme } from "next-themes"
 
 interface BrandProps {
-  theme?: "dark" | "light"
+  theme?: "dark" | "light",
+  type?: string
 }
 
-export const Brand: FC<BrandProps> = ({ theme = "dark" }) => {
+export const Brand: FC<BrandProps> = ({  type }) => {
+  const { theme } = useTheme()
   return (
     <Link
       className="flex cursor-pointer flex-col items-center hover:opacity-50"
@@ -17,10 +22,11 @@ export const Brand: FC<BrandProps> = ({ theme = "dark" }) => {
       rel="noopener noreferrer"
     >
       <div className="mb-2">
-        <ChatbotUISVG theme={theme === "dark" ? "dark" : "light"} scale={0.3} />
+          {/* <img src={theme === "dark" ?GRAYLOGO.src  :LIGHTLOGO.src} alt="Gebra AI" style={{ width: 140 }} /> */}
+          <Logo theme={theme === "dark" ? "white" : "black" } />
       </div>
 
-      <div className="text-4xl font-bold tracking-wide">Gebra AI - Agent</div>
+      {type == "chat" &&  <div className="text-[25px] font-bold tracking-wide">Hello, what would you like to do?</div>}
     </Link>
   )
 }
