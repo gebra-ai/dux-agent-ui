@@ -51,7 +51,10 @@ export const FileViewer: FC<FileViewerProps> = (props) => {
     const [deleteFileType, setDeleteFileType] = useState(0);
     const buttonRef = useRef<HTMLButtonElement>(null)
     const loadFile = async (file: any) => {
-        const fileRecord = files.find(f => f.id === file.id)
+        let fileRecord = files.find(f => f.id === file.id)
+        if (!fileRecord) {
+            fileRecord = file
+        }   
         if (fileRecord?.description == "generated-file") {
             const res = await fetch(process.env.NEXT_PUBLIC_SERVER_END_POINT + "/get-file", {
                 method: "POST",
@@ -131,13 +134,17 @@ export const FileViewer: FC<FileViewerProps> = (props) => {
                 const workspaceId = workspaces[0].id
                 const fileData = await getFileWorkspacesByWorkspaceId(workspaceId)
                 setFiles(fileData.files)
-                loadFile(fileList?.[0] ?? {})
+                if(fileList && fileList.length > 0){
+                    loadFile(fileList?.[0] ?? {})
+                }else{
+                    loadFile(fileData?.files?.[0] ?? {})
+                }
             }
             fetchFiles()
         } else {
             setLoading(false)
         }
-    }, [])
+    }, [open])
     return (
         <React.Fragment>
             <Sheet open={open} onOpenChange={onOpenChange} >
