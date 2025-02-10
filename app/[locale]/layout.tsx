@@ -28,10 +28,11 @@ export const metadata: Metadata = {
   applicationName: APP_NAME,
   icons: {
     icon: [
-      { url: '/favicon.ico' }
+      { url: "/favicon.ico", sizes: "256x256", type: "image/x-icon" },
+      { url: "/gebra-logo.png", sizes: "512x512", type: "image/png" }
     ],
     apple: [
-      { url: '/gebra-logo.png', sizes: '180x180', type: 'image/png' },
+      { url: "/gebra-logo.png", sizes: "512x512", type: "image/png" }
     ],
   },
   title: {

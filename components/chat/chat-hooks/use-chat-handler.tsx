@@ -22,6 +22,7 @@ import {
   validateChatSettings
 } from "../chat-helpers";
 import { v4 as uuidv4 } from "uuid"
+import { useChatStages } from '@/components/chat/chat-hooks/use-chat-stages'
 
 export const useChatHandler = () => {
   const router = useRouter()
@@ -71,6 +72,7 @@ export const useChatHandler = () => {
   } = useContext(ChatbotUIContext)
 
   const chatInputRef = useRef<HTMLTextAreaElement>(null)
+  const { fetchStages } = useChatStages()
 
   useEffect(() => {
     if (!isPromptPickerOpen || !isFilePickerOpen || !isToolPickerOpen) {
@@ -229,6 +231,7 @@ export const useChatHandler = () => {
 
       let currentChat = selectedChat ? { ...selectedChat } : null
       const current_chat_id = currentChat ?  currentChat.id  :uuidv4();
+      const message_id = uuidv4();
       const b64Images = newMessageImages.map(image => image.base64)
       let retrievedFileItems: Tables<"file_items">[] = []
 
@@ -333,7 +336,8 @@ export const useChatHandler = () => {
             setFirstTokenReceived,
             setChatMessages,
             setToolInUse,
-            current_chat_id
+            current_chat_id,
+            message_id
           )
         }
       }
@@ -365,6 +369,7 @@ export const useChatHandler = () => {
       }
 
       await handleCreateMessages(
+        message_id,
         chatMessages,
         currentChat,
         profile!,
@@ -379,6 +384,9 @@ export const useChatHandler = () => {
         setChatImages,
         selectedAssistant
       )
+
+      // After handling messages, ensure fetchStages is called
+      await fetchStages()
 
       setIsGenerating(false)
       setFirstTokenReceived(false)

@@ -18,6 +18,7 @@ import { ChatInput } from "./chat-input"
 import { ChatMessages } from "./chat-messages"
 import { ChatScrollButtons } from "./chat-scroll-buttons"
 import { ChatSecondaryButtons } from "./chat-secondary-buttons"
+import { ChatFlowStages } from "./chat-flow-stages"
 
 interface ChatUIProps {}
 
@@ -59,9 +60,8 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchMessages()
-      await fetchChat()
-
+      fetchMessages(),
+      fetchChat(),
       scrollToBottom()
       setIsAtBottom(true)
     }
@@ -187,6 +187,8 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
 
   return (
     <div className="relative flex h-full flex-col items-center">
+      {process.env.NEXT_PUBLIC_ENABLE_FLOW_STAGES && <ChatFlowStages />}
+      
       <div className="absolute left-4 top-2.5 flex justify-center">
         <ChatScrollButtons
           isAtTop={isAtTop}

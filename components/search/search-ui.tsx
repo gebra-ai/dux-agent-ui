@@ -113,12 +113,12 @@ export function SearchUI() {
           </div>
         ) : (
           hasSearched &&
-          results.length > 0 && (
+          results?.length > 0 && (
             <div className="flex-1 mt-8">
               <div className="h-[calc(100vh-150px)] flex flex-col border rounded-lg overflow-hidden">
                 <div className="overflow-auto">
                   <table className="w-full border-collapse">
-                    <thead className="bg-gray-100 sticky top-0 z-10">
+                    <thead className="sticky top-0 z-10">
                       <tr>
                         {isSemanticSearch ? (
                           <>
@@ -131,7 +131,7 @@ export function SearchUI() {
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {results.map((result, index) => (
+                      {(Array.isArray(results) && results.length > 0 )&& results.map((result, index) => (
                         <tr key={index} className="hover:bg-gray-50">
                           {isSemanticSearch ? (
                             <>

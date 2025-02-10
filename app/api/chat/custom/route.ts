@@ -10,12 +10,13 @@ export const runtime: ServerRuntime = "edge"
 
 export async function POST(request: Request) {
   const json = await request.json()
-  const { chatSettings, messages, customModelId, user_id, chat_id } = json as {
+  const { chatSettings, messages, customModelId, user_id, chat_id, message_id } = json as {
     chatSettings: ChatSettings
     messages: any[]
     customModelId: string,
     user_id: string,
-    chat_id: string
+    chat_id: string,
+    message_id: string,
   }
 
   try {
@@ -38,7 +39,9 @@ export async function POST(request: Request) {
       apiKey: customModel.api_key || "",
       baseURL: customModel.base_url,
       defaultHeaders: {
-      'x-chat-id': chat_id
+      'x-chat-id': chat_id,
+      'x-message-id': message_id,
+
       }
     })
     const response = await custom.chat.completions.create({

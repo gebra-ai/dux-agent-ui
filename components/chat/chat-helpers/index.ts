@@ -200,7 +200,8 @@ export const handleHostedChat = async (
   setFirstTokenReceived: React.Dispatch<React.SetStateAction<boolean>>,
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
   setToolInUse: React.Dispatch<React.SetStateAction<string>>,
-  current_chat_id: string
+  current_chat_id: string,
+  message_id: string
 ) => {
   const provider =
     modelData.provider === "openai" && profile.use_azure_openai
@@ -224,7 +225,8 @@ export const handleHostedChat = async (
     messages: formattedMessages,
     customModelId: provider === "custom" ? modelData.hostedId : "",
     user_id: profile.user_id,
-    chat_id: current_chat_id
+    chat_id: current_chat_id,
+    message_id: message_id,
   }
 
   const response = await fetchChatResponse(
@@ -390,6 +392,7 @@ export const handleCreateChat = async (
 }
 
 export const handleCreateMessages = async (
+  message_id: string,
   chatMessages: ChatMessage[],
   currentChat: Tables<"chats">,
   profile: Tables<"profiles">,
@@ -407,6 +410,7 @@ export const handleCreateMessages = async (
   selectedAssistant: Tables<"assistants"> | null
 ) => {
   const finalUserMessage: TablesInsert<"messages"> = {
+    id: message_id,
     chat_id: currentChat.id,
     assistant_id: null,
     user_id: profile.user_id,
@@ -419,6 +423,7 @@ export const handleCreateMessages = async (
 
   const finalAssistantMessage: TablesInsert<"messages"> = {
     chat_id: currentChat.id,
+    id: uuidv4(),
     assistant_id: selectedAssistant?.id || null,
     user_id: profile.user_id,
     content: generatedText,
@@ -429,7 +434,7 @@ export const handleCreateMessages = async (
   }
 
   let finalChatMessages: ChatMessage[] = []
-
+  debugger
   if (isRegeneration) {
     const lastStartingMessage = chatMessages[chatMessages.length - 1].message
 
