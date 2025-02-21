@@ -1,4 +1,4 @@
-import { ChatFlow, FlowState } from "@/types/chat-flow"
+import { ChatFlow } from "@/types/chat-flow"
 import { supabase } from "@/lib/supabase/browser-client"
 
 export const getChatFlowByChatId = async (chatId: string): Promise<ChatFlow[]> => {

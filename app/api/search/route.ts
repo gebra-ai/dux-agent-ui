@@ -6,12 +6,14 @@ interface SearchRequest {
   chat_id: string
   db_name: string
   es_url: string
+  version: string
+  index_names: string[]
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: SearchRequest = await request.json()
-    const { query, isSemanticSearch, chat_id, db_name, es_url } = body
+    const { query, isSemanticSearch, chat_id, db_name, es_url, index_names, version } = body
     if (!query) {
       return NextResponse.json(
         { error: "Search query is required" },
@@ -19,11 +21,21 @@ export async function POST(request: NextRequest) {
       )
     }
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/v1/_search?query=${query}&is_semantic_search=${isSemanticSearch}&database_name=${db_name}&es_url=${es_url}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/v1/_search`,
       {
+        method: 'POST',
         headers: {
-          "x-chat-id": chat_id
-        }
+          'Content-Type': 'application/json',
+          'x-chat-id': chat_id
+        },
+        body: JSON.stringify({
+          query,
+          is_semantic_search: isSemanticSearch,
+          database_name: db_name,
+          es_url,
+          index_names,
+          version
+        })
       }
     )
     const data = await response.json()

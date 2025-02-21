@@ -17,6 +17,7 @@ import { supabase } from "@/lib/supabase/browser-client"
 import { Tables } from "@/supabase/types"
 import {
   ChatFile,
+  ChatFlow,
   ChatMessage,
   ChatSettings,
   LLM,
@@ -124,6 +125,9 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   // TOOL STORE
   const [selectedTools, setSelectedTools] = useState<Tables<"tools">[]>([])
   const [toolInUse, setToolInUse] = useState<string>("none")
+
+  // CHAT STAGES STORE
+  const [chatStages, setChatStages] = useState<ChatFlow[]>([])
 
   useEffect(() => {
     ;(async () => {
@@ -329,7 +333,11 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         selectedTools,
         setSelectedTools,
         toolInUse,
-        setToolInUse
+        setToolInUse,
+
+        // CHAT STAGES STORE
+        chatStages,
+        setChatStages
       }}
     >
       {children}

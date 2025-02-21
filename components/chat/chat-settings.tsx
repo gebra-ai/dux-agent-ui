@@ -29,25 +29,6 @@ export const ChatSettings: FC<ChatSettingsProps> = ({}) => {
       buttonRef.current.click()
     }
   }
-
-  useEffect(() => {
-    if (!chatSettings) return
-
-    setChatSettings({
-      ...chatSettings,
-      temperature: Math.min(
-        chatSettings.temperature,
-        CHAT_SETTING_LIMITS[chatSettings.model]?.MAX_TEMPERATURE || 1
-      ),
-      contextLength: Math.min(
-        chatSettings.contextLength,
-        CHAT_SETTING_LIMITS[chatSettings.model]?.MAX_CONTEXT_LENGTH || 4096
-      )
-    })
-  }, [chatSettings?.model])
-
-  if (!chatSettings) return null
-
   const allModels = [
     ...models.map(model => ({
       modelId: model.model_id as LLMID,
@@ -62,6 +43,44 @@ export const ChatSettings: FC<ChatSettingsProps> = ({}) => {
     ...availableOpenRouterModels
   ]
 
+  useEffect(() => {
+    if (!chatSettings) return 
+    if(localStorage.activeModel !== chatSettings.model){
+      const fullModel = allModels.find(llm => llm.modelId === localStorage.activeModel)
+      let llmid = localStorage.activeModel as LLMID
+      let model = fullModel ?? {
+        model: "",
+        modelName: llmid,
+        prompt: "",
+        temperature: 0,
+        contextLength: 0,
+        includeProfileContext: false,
+        includeHistoryContext: false
+      }
+      setChatSettings({
+        ...chatSettings,
+        ...model,
+        model: llmid ??  ""
+      })
+    }else{
+      setChatSettings({
+        ...chatSettings,
+        temperature: Math.min(
+          chatSettings.temperature,
+          CHAT_SETTING_LIMITS[chatSettings.model]?.MAX_TEMPERATURE || 1
+        ),
+        contextLength: Math.min(
+          chatSettings.contextLength,
+          CHAT_SETTING_LIMITS[chatSettings.model]?.MAX_CONTEXT_LENGTH || 4096
+        )
+      })
+    }
+  }, [chatSettings?.model])
+
+  if (!chatSettings) return null
+
+  
+
   const fullModel = allModels.find(llm => llm.modelId === chatSettings.model)
 
   return (
@@ -73,9 +92,8 @@ export const ChatSettings: FC<ChatSettingsProps> = ({}) => {
           variant="ghost"
         >
           <div className="max-w-[120px] truncate text-lg sm:max-w-[300px] lg:max-w-[500px]">
-            {fullModel?.modelName || chatSettings.model}
+            {fullModel?.modelName || chatSettings.model || "Select a Model"}
           </div>
-
           <IconAdjustmentsHorizontal size={28} />
         </Button>
       </PopoverTrigger>
@@ -86,7 +104,10 @@ export const ChatSettings: FC<ChatSettingsProps> = ({}) => {
       >
         <ChatSettingsForm
           chatSettings={chatSettings}
-          onChangeChatSettings={setChatSettings}
+          onChangeChatSettings={(json) => {
+            localStorage.setItem("activeModel", json.model)
+            setChatSettings(json)
+          }}
         />
       </PopoverContent>
     </Popover>

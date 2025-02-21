@@ -294,36 +294,6 @@ export type Database = {
           },
         ]
       }
-      chat_flow: {
-        Row: {
-          chat_id: string
-          command_stage: Database["public"]["Enums"]["command_stage"]
-          created_at: string
-          flow_state: Database["public"]["Enums"]["flow_state"]
-          id: number
-          metadata: Json | null
-          updated_at: string
-        }
-        Insert: {
-          chat_id: string
-          command_stage: Database["public"]["Enums"]["command_stage"]
-          created_at?: string
-          flow_state?: Database["public"]["Enums"]["flow_state"]
-          id?: number
-          metadata?: Json | null
-          updated_at?: string
-        }
-        Update: {
-          chat_id?: string
-          command_stage?: Database["public"]["Enums"]["command_stage"]
-          created_at?: string
-          flow_state?: Database["public"]["Enums"]["flow_state"]
-          id?: number
-          metadata?: Json | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
       chats: {
         Row: {
           assistant_id: string | null
@@ -1436,14 +1406,7 @@ export type Database = {
       }
     }
     Enums: {
-      command_stage:
-        | "explore"
-        | "migrate"
-        | "codepush"
-        | "deploy"
-        | "search"
-        | "cleanup"
-      flow_state: "NOT_STARTED" | "IN_PROGRESS" | "SUCCESS" | "FAILED"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never

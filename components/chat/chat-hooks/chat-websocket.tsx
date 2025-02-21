@@ -16,14 +16,12 @@ export const useWebSocket = (url: string = WEBSOCKET_URL) => {
     const ws = new WebSocket(url);
 
     ws.onopen = () => {
-      console.log('Connected to WebSocket');
       setIsConnected(true);
       setSocket(ws);
     };
 
     ws.onmessage = (event) => {
       const message: WebSocketMessage = JSON.parse(event.data);
-      console.log('Received message:', message);
       switch (message.type) {
         case 'initial_data':
           setData(message.data);
@@ -40,7 +38,6 @@ export const useWebSocket = (url: string = WEBSOCKET_URL) => {
     };
 
     ws.onclose = () => {
-      console.log('Disconnected from WebSocket');
       setIsConnected(false);
       setSocket(null);
     };

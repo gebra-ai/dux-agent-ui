@@ -20,7 +20,8 @@ import {
   IconFileDownload,
   IconLoader2,
   IconLogout,
-  IconUser
+  IconUser,
+  IconNews
 } from "@tabler/icons-react"
 import {
   Select,
@@ -859,6 +860,20 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
                   className="cursor-pointer hover:opacity-50"
                   size={32}
                   onClick={exportLocalStorageAsJSON}
+                />
+              }
+            />
+            <WithTooltip
+              display={
+                <div>
+                  Release Notes
+                </div>
+              }
+              trigger={
+                <IconNews
+                  className="cursor-pointer hover:opacity-50"
+                  size={32}
+                  onClick={() => window.open("/release", "_blank")}
                 />
               }
             />

@@ -102,3 +102,24 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 14px; /* Adjust thickness */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #6b7280; /* Dark gray scrollbar */
+  border-radius: 8px; /* Rounded scrollbar */
+  border: 3px solid #e5e7eb; /* Adds some space around the scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: #e5e7eb; /* Light gray track */
+}
+
+/* Force scrollbar to always be visible on Mac */
+.custom-scrollbar {
+  scrollbar-width: auto; /* Ensures visibility in Firefox */
+  -ms-overflow-style: auto; /* Ensures visibility in IE/Edge */
+}

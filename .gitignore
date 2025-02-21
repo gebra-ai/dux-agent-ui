@@ -7,3 +7,4 @@ node_modules
 public
 supabase/config.toml
 !/supabase/types.ts
+.idea

@@ -13,7 +13,7 @@ import { useContext, useEffect, useRef } from "react"
 import { LLM_LIST } from "../../../lib/models/llm/llm-list"
 import {
   createTempMessages,
-  handleCreateChat,
+  handleCreateChat,handleCreateConfig,
   handleCreateMessages,
   handleHostedChat,
   handleLocalChat,
@@ -354,6 +354,10 @@ export const useChatHandler = () => {
           setChats,
           setChatFiles
         )
+        handleCreateConfig(
+          profile?.user_id || "",
+          current_chat_id
+        )
       } else {
         const updatedChat = await updateChat(currentChat.id, {
           updated_at: new Date().toISOString()
@@ -385,11 +389,10 @@ export const useChatHandler = () => {
         selectedAssistant
       )
 
-      // After handling messages, ensure fetchStages is called
-      await fetchStages()
-
       setIsGenerating(false)
       setFirstTokenReceived(false)
+      // After handling messages, ensure fetchStages is called
+      await fetchStages()
     } catch (error) {
       setIsGenerating(false)
       setFirstTokenReceived(false)

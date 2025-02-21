@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   applicationName: APP_NAME,
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "256x256", type: "image/x-icon" },
+      { url: "/faviconv1.ico"},
       { url: "/gebra-logo.png", sizes: "512x512", type: "image/png" }
     ],
     apple: [

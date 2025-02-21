@@ -38,6 +38,120 @@ export const getFileWorkspacesByWorkspaceId = async (workspaceId: string) => {
   return workspace
 }
 
+export const getFilesByChatId = async (chatId: string) => {
+  
+  // Step 1: Get file_item_ids from message_file_items
+  const { data: messageFileItems, error: messageFileItemsError } = await supabase
+    .from("chat_file_items")
+    .select("file_item_id")
+    .eq("chat_id", chatId)
+
+  if (messageFileItemsError) {
+    throw new Error(messageFileItemsError.message)
+  }
+
+  const fileItemIds = messageFileItems.map((item) => item.file_item_id)
+
+  if (fileItemIds.length === 0) {
+    return [] // No file items found
+  }
+
+  // Step 2: Get file_ids from file_items
+  const { data: fileItems, error: fileItemsError } = await supabase
+    .from("file_items")
+    .select("file_id")
+    .in("id", fileItemIds)
+
+  if (fileItemsError) {
+    throw new Error(fileItemsError.message)
+  }
+
+  const fileIds = fileItems.map((item) => item.file_id)
+
+  if (fileIds.length === 0) {
+    return [] // No files found
+  }
+
+  // Step 3: Fetch actual files from files table
+  const { data: files, error: filesError } = await supabase
+    .from("files")
+    .select("*")
+    .in("id", fileIds)
+
+  if (filesError) {
+    throw new Error(filesError.message)
+  }
+
+  return files
+}
+
+export const deleteFilesByChatId = async (chatId: string) => {
+  // Step 1: Get file_item_ids from chat_file_items
+  const { data: chatFileItems, error: chatFileItemsError } = await supabase
+    .from("chat_file_items")
+    .select("file_item_id")
+    .eq("chat_id", chatId)
+
+  if (chatFileItemsError) {
+    throw new Error(chatFileItemsError.message)
+  }
+
+  const fileItemIds = chatFileItems.map((item) => item.file_item_id)
+
+  if (fileItemIds.length === 0) {
+    return { success: true, message: "No files to delete" }
+  }
+
+  // Step 2: Get file_ids from file_items
+  const { data: fileItems, error: fileItemsError } = await supabase
+    .from("file_items")
+    .select("file_id")
+    .in("id", fileItemIds)
+
+  if (fileItemsError) {
+    throw new Error(fileItemsError.message)
+  }
+
+  const fileIds = fileItems.map((item) => item.file_id)
+
+  if (fileIds.length === 0) {
+    return { success: true, message: "No files to delete" }
+  }
+
+  // Step 3: Delete records from files table
+  const { error: filesDeleteError } = await supabase
+    .from("files")
+    .delete()
+    .in("id", fileIds)
+
+  if (filesDeleteError) {
+    throw new Error(filesDeleteError.message)
+  }
+
+  // Step 4: Delete records from file_items table
+  const { error: fileItemsDeleteError } = await supabase
+    .from("file_items")
+    .delete()
+    .in("id", fileItemIds)
+
+  if (fileItemsDeleteError) {
+    throw new Error(fileItemsDeleteError.message)
+  }
+
+  // Step 5: Delete records from chat_file_items table
+  const { error: chatFileItemsDeleteError } = await supabase
+    .from("chat_file_items")
+    .delete()
+    .eq("chat_id", chatId)
+
+  if (chatFileItemsDeleteError) {
+    throw new Error(chatFileItemsDeleteError.message)
+  }
+
+  return { success: true, message: "Files deleted successfully" }
+}
+
+
 export const getFileWorkspacesByFileId = async (fileId: string) => {
   const { data: file, error } = await supabase
     .from("files")

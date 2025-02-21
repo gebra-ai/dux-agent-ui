@@ -49,7 +49,6 @@ export const ChatFilesDisplay: FC<ChatFilesDisplayProps> = ({}) => {
   const [showPreview, setShowPreview] = useState(false)
   const [isopen, setOpen] = useState(false)
   const [fileData, setFileDate] = useState({})
-
   const messageImages = [
     ...newMessageImages.filter(
       image =>

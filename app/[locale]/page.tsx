@@ -1,6 +1,6 @@
 "use client"
 
-import { FULLICONGEBRA } from "@/components/icons/fill-gebra-icon"
+// import { FULLICONGEBRA } from "@/components/icons/fill-gebra-icon"
 import { IconArrowRight } from "@tabler/icons-react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
@@ -11,7 +11,7 @@ export default function HomePage() {
   return (
     <div className="flex size-full flex-col items-center justify-center">
       <div>
-        <FULLICONGEBRA theme={theme === "dark" ? "light" : "dark"} scale={0.8} />
+        {/* <FULLICONGEBRA theme={theme === "dark" ? "light" : "dark"} scale={0.8} /> */}
       </div>
 
       <div className="mt-2 text-4xl font-bold">Gebra AI - Agent</div>

@@ -1,6 +1,6 @@
 -- Step 1: Create ENUM type (only if it does not exist)
 CREATE TYPE flow_state AS ENUM ('NOT_STARTED', 'IN_PROGRESS', 'SUCCESS', 'FAILED');
-CREATE TYPE command_stage AS ENUM ('explore', 'migrate', 'codepush', 'deploy', 'search', 'cleanup');
+CREATE TYPE command_stage AS ENUM ('explore', 'index', 'codepush', 'deploy', 'search', 'cleanup');
 
 -- Step 2: Create table using ENUM type
 CREATE TABLE IF NOT EXISTS chat_flow (

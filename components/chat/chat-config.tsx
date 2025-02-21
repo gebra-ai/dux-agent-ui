@@ -26,6 +26,14 @@ interface ChatConfigProps {
     chat_id: string;
 }
 
+type EsIndex = {
+    index: string,
+    health: string,
+    status: string,
+    docs_count: number,
+    size: string,
+}
+
 export const ChatConfig: FC<ChatConfigProps> = (props) => {
     const { onOpenChange, open, chat_id } = props;
     const {
@@ -40,42 +48,49 @@ export const ChatConfig: FC<ChatConfigProps> = (props) => {
         elasticSearchUrl: "",
         databaseName: "",
         gitusername: "",
-        githubtoken: ""
+        githubtoken: "",
+        es_indices: "",
     })
     const updateState = (key: string, value: any) => {
         setState((prevState: any) => ({ ...prevState, [key]: value }))
     }
 
     useEffect(() => {
-        const fetchFiles = async () => {
-            if (profile) {
-                const configuration: any = await getConfigByChatIdOrUserId(profile.user_id, currentChatId);
-                setConfiguration(configuration)
-                setState({
-                    elasticSearchUrl: (configuration?.meta as { elasticSearchUrl?: string })?.elasticSearchUrl || "",
-                    databaseName: (configuration?.meta as { databaseName?: string })?.databaseName || "",
-                    gitusername: (configuration?.meta as { gitusername?: string })?.gitusername || "",
-                    githubtoken: (configuration?.meta as { githubtoken?: string })?.githubtoken || "",
-                })
-                setLoading(false)
-            } else {
-                setLoading(false)
-            }
-        }
-        fetchFiles()
+        fetchFiles();
     }, [])
+
+
+    const fetchFiles = async () => {
+        if (profile) {
+            const configuration: any = await getConfigByChatIdOrUserId(profile.user_id, currentChatId);
+            setConfiguration(configuration)
+            setState({
+                elasticSearchUrl: (configuration?.meta as { elasticSearchUrl?: string })?.elasticSearchUrl || "",
+                databaseName: (configuration?.meta as { databaseName?: string })?.databaseName || "",
+                gitusername: (configuration?.meta as { gitusername?: string })?.gitusername || "",
+                githubtoken: (configuration?.meta as { githubtoken?: string })?.githubtoken || "",
+            })
+            setLoading(false)
+        } else {
+            setLoading(false)
+        }
+    }
 
     const saveChatConfig = async () => {
         if (!profile) return;
+        
         if (!(configuration?.id) || (configuration.chat_id !== currentChatId && configuration.type != "chat-default-config") || (configuration.type == "configuration")) {
+              const meta = Object.entries(configuration.meta).length > 0 ? configuration.meta : {}
               const CreateConfig = await createConfig({
                 chat_id: currentChatId? currentChatId : null,
                 user_id: profile.user_id,
                 meta: {
+                  ...meta,
                   databaseName: state.databaseName,
                   gitusername: state.gitusername,
                   githubtoken: state.githubtoken,
                   elasticSearchUrl: state.elasticSearchUrl,
+                  es_indices: state.es_indices,
                 },
                 type: currentChatId ? "chat-config" : "chat-default-config",
                 created_at: new Date().toISOString(),
@@ -87,10 +102,12 @@ export const ChatConfig: FC<ChatConfigProps> = (props) => {
                 chat_id: currentChatId? currentChatId :null,
                 user_id: profile.user_id,
                 meta: {
+                  ...((configuration?.meta as object) || {}),
                   elasticSearchUrl: state.elasticSearchUrl,
                   databaseName: state.databaseName,
                   gitusername: state.gitusername,
                   githubtoken: state.githubtoken,
+                  es_indices: state.es_indices,
                 },
                 type: currentChatId ? "chat-config" : "chat-default-config",
                 updated_at: new Date().toISOString()
@@ -105,7 +122,7 @@ export const ChatConfig: FC<ChatConfigProps> = (props) => {
                     className="flex flex-col justify-between p-4"
                     side="rightv2"
                 >
-                    <div className="grow overflow-auto">
+                    <div className="grow overflow-auto relative z-50">
                         <SheetHeader>
                             <SheetTitle className="flex items-center justify-between space-x-2">
                                 <div>Chat Configuration</div>
@@ -136,28 +153,6 @@ export const ChatConfig: FC<ChatConfigProps> = (props) => {
                                     onChange={e => updateState("githubtoken", e.target.value)}
                                 />
                             </div>
-                            {/* <div className="space-y-1 mt-3">
-                                <Label>Database connection</Label><br />
-                                <Label >Database Name</Label>
-                                <Select
-                                    value={state["databaseName"]}
-                                    onValueChange={(embeddingsProvider: "ecommerce.db" | "vacation_planner.db") => {
-                                        updateState("databaseName", embeddingsProvider)
-                                    }}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue defaultValue="vacation_planner.db" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="ecommerce.db">
-                                            ecommerce.db
-                                        </SelectItem>
-                                        <SelectItem value="vacation_planner.db">
-                                            vacation_planner.db
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div> */}
                         </div> : <div className="h-[300px]">
                             <Loading />
                         </div>}

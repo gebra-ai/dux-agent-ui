@@ -21,7 +21,9 @@ import {
 } from "@/types"
 import React from "react"
 import { toast } from "sonner"
+import { getConfigByChatIdOrUserId, createConfig } from "@/db/configuration"
 import { v4 as uuidv4 } from "uuid"
+import { string } from "zod"
 
 export const validateChatSettings = (
   chatSettings: ChatSettings | null,
@@ -434,7 +436,6 @@ export const handleCreateMessages = async (
   }
 
   let finalChatMessages: ChatMessage[] = []
-  debugger
   if (isRegeneration) {
     const lastStartingMessage = chatMessages[chatMessages.length - 1].message
 
@@ -518,4 +519,25 @@ export const handleCreateMessages = async (
 
     setChatMessages(finalChatMessages)
   }
+}
+
+export const handleCreateConfig = async (user_id: string, chat_id:string) => {
+  const configuration: any = await getConfigByChatIdOrUserId(user_id, chat_id);
+  let meta = {}
+  if(Object.entries(configuration).length > 0){
+    meta = {
+      databaseName: configuration.meta['databaseName'],
+      gitusername: configuration.meta['gitusername'],
+      githubtoken: configuration.meta['githubtoken'],
+      elasticSearchUrl: configuration.meta['elasticSearchUrl'],
+    }
+  }
+  await createConfig({
+    chat_id:chat_id,
+    user_id: user_id,
+    meta: meta,
+    type: "chat-config",
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  })
 }
