@@ -38,66 +38,103 @@ export const useChatStages = () => {
   const selectedChatId = selectedChat?.id
   const model = selectedChat?.model
 
-  const V1_STAGES = useMemo(() => [
-    "explore",
-    "index",
-    "codepush",
-    "deploy",
-    "search",
-    "cleanup",
-  ] as const, [])
+  // Define all possible flows and their stages
+  const flowDefinitions = useMemo(() => ({
+    v1: ["explore", "index", "codepush", "deploy", "search", "cleanup"],
+    v3_normal_indexing: [
+      "index_mapping_generator", 
+      "indexing_script_generator", 
+      "start_indexing", 
+      "search_api_generator", 
+      "code_push", 
+      "deploy_api", 
+      "perform_search_activity",
+    ],
+    v3_existing_indexing: [
+      "es_search_api_generator", 
+      "code_push", 
+      "deploy_api", 
+      "perform_search_activity",
+    ],
+    v3_vector_training: [
+      "initiate_vector_training",
+      "perform_search_activity"
+    ]
+  }), [])
 
-  const V3_STAGES = useMemo(() => [
-    "index_mapping_generator",
-    "indexing_script_generator",
-    "start_indexing",
-    "search_api_generator",
-    "es_search_api_generator",
-    "code_push",
-    "deploy_api",
-    "initiate_vector_training",
-    "perform_search_activity"
-  ] as const, [])
+  // Define starting stages that identify each flow
+  const flowStartStages = useMemo(() => ({
+    v1: "explore",
+    v3_normal_indexing: "index_mapping_generator",
+    v3_existing_indexing: "es_search_api_generator",
+    v3_vector_training: "initiate_vector_training"
+  }), [])
+
+  const determineActiveFlow = useCallback((existingStages: ChatFlow[]) => {
+    // If no stages have been started yet, return empty array
+    if (!existingStages.length || existingStages.every(stage => stage.flow_state === 'NOT_STARTED')) {
+      return null;
+    }
+
+    // Check which flow has been started
+    for (const [flowKey, startStage] of Object.entries(flowStartStages)) {
+      const startStageData = existingStages.find(s => s.command_stage === startStage);
+      if (startStageData && startStageData.flow_state !== 'NOT_STARTED') {
+        return flowKey as keyof typeof flowDefinitions;
+      }
+    }
+
+    return null;
+  }, [flowStartStages]);
 
   const fetchStages = useCallback(async () => {
     if (!selectedChatId || !model) {
       console.warn("Skipping fetchStages: selectedChat is undefined")
       return
     }
-    const applicableStages = model.toLowerCase().includes('v3') ? V3_STAGES : V1_STAGES
     
     setIsLoading(true)
     setError(null)
     
-    const defaultStages: ChatFlow[] = applicableStages.map(stage => ({
-      id: 0,
-      chat_id: selectedChatId,
-      command_stage: stage,
-      flow_state: 'NOT_STARTED',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      metadata: null
-    }))
-
     try {
-      const data = await getChatFlowByChatId(selectedChatId)
-      if (data.length === 0) {
-        setChatStages([...defaultStages])
-      } else {
-        const stageMap = new Map(data.map(stage => [stage.command_stage, stage]))
+      const existingData = await getChatFlowByChatId(selectedChatId)
+      const activeFlow = determineActiveFlow(existingData);
+      
+      if (!activeFlow) {
+        setChatStages([]);
+        setIsLoading(false);
+        return;
+      }
+      
+      const applicableStages = flowDefinitions[activeFlow];
+      const defaultStages: ChatFlow[] = applicableStages.map(stage => ({
+        id: 0,
+        chat_id: selectedChatId,
+        command_stage: stage,
+        flow_state: 'NOT_STARTED',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        metadata: null
+      }))
+
+      // Map existing stage data to default stages
+      if (existingData.length > 0) {
+        const stageMap = new Map(existingData.map(stage => [stage.command_stage, stage]))
         const allStages = defaultStages.map(defaultStage => 
           stageMap.get(defaultStage.command_stage) || defaultStage
         )
         setChatStages([...allStages])
+      } else {
+        setChatStages([...defaultStages])
       }
     } catch (error) {
       console.error("Error fetching stages:", error)
       setError(error instanceof Error ? error : new Error('Failed to fetch stages'))
-      setChatStages([...defaultStages])
+      setChatStages([])
     } finally {
       setIsLoading(false)
     }
-  }, [selectedChatId, model, setChatStages])
+  }, [selectedChatId, model, setChatStages, flowDefinitions, determineActiveFlow])
 
   return {
     chatStages,
