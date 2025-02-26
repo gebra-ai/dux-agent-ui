@@ -1,7 +1,6 @@
-import { useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import { useContext, useState, useEffect, useCallback } from 'react'
 import { ChatbotUIContext } from '@/context/context'
 import { ChatFlow } from '@/types'
-import { getChatFlowByChatId } from '@/db/chat-flow'
 
 export const stageDisplayNames: Record<string, string> = {
   // V1
@@ -38,55 +37,6 @@ export const useChatStages = () => {
   const selectedChatId = selectedChat?.id
   const model = selectedChat?.model
 
-  // Define all possible flows and their stages
-  const flowDefinitions = useMemo(() => ({
-    v1: ["explore", "index", "codepush", "deploy", "search", "cleanup"],
-    v3_normal_indexing: [
-      "index_mapping_generator", 
-      "indexing_script_generator", 
-      "start_indexing", 
-      "search_api_generator", 
-      "code_push", 
-      "deploy_api", 
-      "perform_search_activity",
-    ],
-    v3_existing_indexing: [
-      "es_search_api_generator", 
-      "code_push", 
-      "deploy_api", 
-      "perform_search_activity",
-    ],
-    v3_vector_training: [
-      "initiate_vector_training",
-      "perform_search_activity"
-    ]
-  }), [])
-
-  // Define starting stages that identify each flow
-  const flowStartStages = useMemo(() => ({
-    v1: "explore",
-    v3_normal_indexing: "index_mapping_generator",
-    v3_existing_indexing: "es_search_api_generator",
-    v3_vector_training: "initiate_vector_training"
-  }), [])
-
-  const determineActiveFlow = useCallback((existingStages: ChatFlow[]) => {
-    // If no stages have been started yet, return empty array
-    if (!existingStages.length || existingStages.every(stage => stage.flow_state === 'NOT_STARTED')) {
-      return null;
-    }
-
-    // Check which flow has been started
-    for (const [flowKey, startStage] of Object.entries(flowStartStages)) {
-      const startStageData = existingStages.find(s => s.command_stage === startStage);
-      if (startStageData && startStageData.flow_state !== 'NOT_STARTED') {
-        return flowKey as keyof typeof flowDefinitions;
-      }
-    }
-
-    return null;
-  }, [flowStartStages]);
-
   const fetchStages = useCallback(async () => {
     if (!selectedChatId || !model) {
       console.warn("Skipping fetchStages: selectedChat is undefined")
@@ -97,35 +47,18 @@ export const useChatStages = () => {
     setError(null)
     
     try {
-      const existingData = await getChatFlowByChatId(selectedChatId)
-      const activeFlow = determineActiveFlow(existingData);
+      const response = await fetch(`/api/chat-flow/active?chatId=${selectedChatId}`)
       
-      if (!activeFlow) {
-        setChatStages([]);
-        setIsLoading(false);
-        return;
+      if (!response.ok) {
+        throw new Error(`API returned status: ${response.status}`)
       }
       
-      const applicableStages = flowDefinitions[activeFlow];
-      const defaultStages: ChatFlow[] = applicableStages.map(stage => ({
-        id: 0,
-        chat_id: selectedChatId,
-        command_stage: stage,
-        flow_state: 'NOT_STARTED',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        metadata: null
-      }))
-
-      // Map existing stage data to default stages
-      if (existingData.length > 0) {
-        const stageMap = new Map(existingData.map(stage => [stage.command_stage, stage]))
-        const allStages = defaultStages.map(defaultStage => 
-          stageMap.get(defaultStage.command_stage) || defaultStage
-        )
-        setChatStages([...allStages])
+      const data = await response.json()
+      
+      if (Array.isArray(data)) {
+        setChatStages(data)
       } else {
-        setChatStages([...defaultStages])
+        setChatStages([])
       }
     } catch (error) {
       console.error("Error fetching stages:", error)
@@ -134,7 +67,7 @@ export const useChatStages = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [selectedChatId, model, setChatStages, flowDefinitions, determineActiveFlow])
+  }, [selectedChatId, model, setChatStages])
 
   return {
     chatStages,
