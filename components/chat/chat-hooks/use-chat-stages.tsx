@@ -1,7 +1,6 @@
-import { useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import { useContext, useState, useEffect, useCallback } from 'react'
 import { ChatbotUIContext } from '@/context/context'
 import { ChatFlow } from '@/types'
-import { getChatFlowByChatId } from '@/db/chat-flow'
 
 export const stageDisplayNames: Record<string, string> = {
   // V1
@@ -38,62 +37,33 @@ export const useChatStages = () => {
   const selectedChatId = selectedChat?.id
   const model = selectedChat?.model
 
-  const V1_STAGES = useMemo(() => [
-    "explore",
-    "index",
-    "codepush",
-    "deploy",
-    "search",
-    "cleanup",
-  ] as const, [])
-
-  const V3_STAGES = useMemo(() => [
-    "index_mapping_generator",
-    "indexing_script_generator",
-    "start_indexing",
-    "search_api_generator",
-    "es_search_api_generator",
-    "code_push",
-    "deploy_api",
-    "initiate_vector_training",
-    "perform_search_activity"
-  ] as const, [])
-
   const fetchStages = useCallback(async () => {
     if (!selectedChatId || !model) {
       console.warn("Skipping fetchStages: selectedChat is undefined")
       return
     }
-    const applicableStages = model.toLowerCase().includes('v3') ? V3_STAGES : V1_STAGES
     
     setIsLoading(true)
     setError(null)
     
-    const defaultStages: ChatFlow[] = applicableStages.map(stage => ({
-      id: 0,
-      chat_id: selectedChatId,
-      command_stage: stage,
-      flow_state: 'NOT_STARTED',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      metadata: null
-    }))
-
     try {
-      const data = await getChatFlowByChatId(selectedChatId)
-      if (data.length === 0) {
-        setChatStages([...defaultStages])
+      const response = await fetch(`/api/chat-flow/active?chatId=${selectedChatId}`)
+      
+      if (!response.ok) {
+        throw new Error(`API returned status: ${response.status}`)
+      }
+      
+      const data = await response.json()
+      
+      if (Array.isArray(data)) {
+        setChatStages(data)
       } else {
-        const stageMap = new Map(data.map(stage => [stage.command_stage, stage]))
-        const allStages = defaultStages.map(defaultStage => 
-          stageMap.get(defaultStage.command_stage) || defaultStage
-        )
-        setChatStages([...allStages])
+        setChatStages([])
       }
     } catch (error) {
       console.error("Error fetching stages:", error)
       setError(error instanceof Error ? error : new Error('Failed to fetch stages'))
-      setChatStages([...defaultStages])
+      setChatStages([])
     } finally {
       setIsLoading(false)
     }

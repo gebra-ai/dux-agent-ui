@@ -91,6 +91,10 @@ export const ChatFlowStages = () => {
     }
   }
 
+  if (!chatStages || chatStages.length === 0) {
+    return null;
+  }
+
   return (
     <div 
       className="fixed bg-white p-4 rounded-lg border shadow-lg"
