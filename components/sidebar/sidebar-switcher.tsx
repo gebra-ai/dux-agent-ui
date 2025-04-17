@@ -14,7 +14,7 @@ import { TabsList } from "../ui/tabs"
 import { WithTooltip } from "../ui/with-tooltip"
 import { ProfileSettings } from "../utility/profile-settings"
 import { SidebarSwitchItem } from "./sidebar-switch-item"
-import { getHiddenContentTypes, shouldShowContentType } from "../utility/sidebar-content-visibility"
+import { getHiddenContentTypes, shouldShowContentType } from "../utility/content-visibility"
 
 export const SIDEBAR_ICON_SIZE = 28
 
