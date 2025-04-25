@@ -67,7 +67,6 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
   } = useContext(ChatbotUIContext)
 
   const router = useRouter()
-
   const buttonRef = useRef<HTMLButtonElement>(null)
 
   const [isOpen, setIsOpen] = useState(false)
@@ -786,61 +785,6 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ }) => {
                   </>
                 )}
               </div>
-            </TabsContent>
-
-            <TabsContent className="mt-4 space-y-4" value="config">
-              <div className="space-y-1">
-                <Label>Elastic Search Url</Label>
-                <Input
-                  placeholder="Elastic Search Url"
-                  value={state["elasticSearchUrl"]}
-                  onChange={e => updateState("elasticSearchUrl", e.target.value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>Github Username</Label>
-                <Input
-                  placeholder="Github Username"
-                  value={state["gitusername"]}
-                  onChange={e => updateState("gitusername", e.target.value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>Github Token</Label>
-                <Input
-                  placeholder="Github Token"
-                  value={state["githubtoken"]}
-                  onChange={e => updateState("githubtoken", e.target.value)}
-                />
-              </div>
-              <div className="space-y-1">
-                <Label>Database connection</Label><br />
-                <Label >Database Name</Label>
-                {/* <Input
-                  placeholder="Database Name"
-                  value={state["databaseName"]}
-                  onChange={e => updateState("databaseName", e.target.value)}
-                /> */}
-                <Select
-                  value={state["databaseName"]}
-                  onValueChange={(embeddingsProvider: "ecommerce.db" | "vacationplanner.db") => {
-                    updateState("databaseName", embeddingsProvider)
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue defaultValue="vacationplanner.db" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ecommerce.db">
-                      ecommerce.db
-                    </SelectItem>
-                    <SelectItem value="vacationplanner.db">
-                      vacation_planner.db
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
             </TabsContent>
           </Tabs>
         </div>
