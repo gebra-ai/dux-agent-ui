@@ -9,11 +9,12 @@ import {
   IconRobotFace,
   IconSparkles
 } from "@tabler/icons-react"
-import { FC } from "react"
+import { FC, useState } from "react"
 import { TabsList } from "../ui/tabs"
 import { WithTooltip } from "../ui/with-tooltip"
 import { ProfileSettings } from "../utility/profile-settings"
 import { SidebarSwitchItem } from "./sidebar-switch-item"
+import { getHiddenContentTypes, shouldShowContentType } from "../utility/sidebar-content-visibility"
 
 export const SIDEBAR_ICON_SIZE = 28
 
@@ -24,6 +25,12 @@ interface SidebarSwitcherProps {
 export const SidebarSwitcher: FC<SidebarSwitcherProps> = ({
   onContentTypeChange
 }) => {
+  const [hiddenContentTypes] = useState<ContentType[]>(getHiddenContentTypes())
+
+  const isContentTypeVisible = (contentType: ContentType) => {
+    return shouldShowContentType(contentType, hiddenContentTypes)
+  }
+
   return (
     <div className="flex flex-col justify-between border-r-2 pb-5">
       <TabsList className="bg-background grid h-[440px] grid-rows-7">
@@ -57,23 +64,29 @@ export const SidebarSwitcher: FC<SidebarSwitcherProps> = ({
           onContentTypeChange={onContentTypeChange}
         />
 
-        <SidebarSwitchItem
-          icon={<IconBooks size={SIDEBAR_ICON_SIZE} />}
-          contentType="collections"
-          onContentTypeChange={onContentTypeChange}
-        />
+        {isContentTypeVisible('collections') && (
+          <SidebarSwitchItem
+            icon={<IconRobotFace size={SIDEBAR_ICON_SIZE} />}
+            contentType="collections"
+            onContentTypeChange={onContentTypeChange}
+          />
+        )}
 
-        <SidebarSwitchItem
-          icon={<IconRobotFace size={SIDEBAR_ICON_SIZE} />}
-          contentType="assistants"
-          onContentTypeChange={onContentTypeChange}
-        />
+        {isContentTypeVisible('assistants') && (
+          <SidebarSwitchItem
+            icon={<IconRobotFace size={SIDEBAR_ICON_SIZE} />}
+            contentType="assistants"
+            onContentTypeChange={onContentTypeChange}
+          />
+        )}
 
-        <SidebarSwitchItem
-          icon={<IconBolt size={SIDEBAR_ICON_SIZE} />}
-          contentType="tools"
-          onContentTypeChange={onContentTypeChange}
-        />
+        {isContentTypeVisible('tools') && (
+          <SidebarSwitchItem
+            icon={<IconBolt size={SIDEBAR_ICON_SIZE} />}
+            contentType="tools"
+            onContentTypeChange={onContentTypeChange}
+          />
+        )}
       </TabsList>
 
       <div className="flex flex-col items-center space-y-4">

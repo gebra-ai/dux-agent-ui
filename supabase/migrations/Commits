@@ -1,0 +1,41 @@
+commit 31497973d10969558b63951a3cd54c5f445652a1 (HEAD -> feaat/DUX-149, origin/feaat/DUX-149)
+Author: avinashknagar <33415747+avinashknagar@users.noreply.github.com>
+Date:   Thu Apr 17 16:58:57 2025 +0530
+
+    fix[DUX-149]: Configure Default Model
+
+commit 0b674b6b8b532f0a4596484c0e62eacd43139376
+Author: avinashknagar <33415747+avinashknagar@users.noreply.github.com>
+Date:   Thu Apr 17 16:56:11 2025 +0530
+
+    feat[DUX-149]: Remove elastic search and db configuration for everloop
+
+commit 04b4842aafe1cab73f44459b664b4fa65bb377a2
+Author: avinashknagar <33415747+avinashknagar@users.noreply.github.com>
+Date:   Thu Apr 17 16:48:25 2025 +0530
+
+    feat[DUX-149]: Remove chat info buttons (model, temprature etc) for everloop
+
+commit 780d7f82858d4d20cc21f4c8399826172cf75b95
+Author: avinashknagar <33415747+avinashknagar@users.noreply.github.com>
+Date:   Thu Apr 17 16:37:27 2025 +0530
+
+    feat[DUX-149]: Remove workspace switcher for everloop
+
+commit 59fb40ec4896b2742c9137c944dc45f42e89822a
+Author: avinashknagar <33415747+avinashknagar@users.noreply.github.com>
+Date:   Thu Apr 17 16:31:21 2025 +0530
+
+    feat[DUX-149]: Remove items from sidebar
+
+commit 666fbe60fb7b39450fb26da82428e1b13df0d16b
+Author: avinashknagar <33415747+avinashknagar@users.noreply.github.com>
+Date:   Thu Apr 17 15:48:22 2025 +0530
+
+    feat[DUX-149]: Configure Default Model
+
+commit 2326a479dd0750a3fc4bddb5d81400056981d54b (main)
+Author: avinashknagar <33415747+avinashknagar@users.noreply.github.com>
+Date:   Thu Apr 17 14:52:12 2025 +0530
+
+    feat: Hide terminal
