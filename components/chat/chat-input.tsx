@@ -87,7 +87,7 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
   const [type, setType] = useState<Number>(1)
 
   useEffect(() => {
-    setDefaultShow(true)
+    setDefaultShow(false)
   }, [])
   const {
     isAssistantPickerOpen,
