@@ -49,6 +49,8 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
     )
   }
 
+  const showWorkspaceControls = false;
+
   return (
     <TabsContent
       className="m-0 w-full space-y-2"
@@ -61,11 +63,12 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar }) => {
       value={contentType}
     >
       <div className="flex h-full flex-col p-3">
-        <div className="flex items-center border-b-2 pb-2">
-          <WorkspaceSwitcher />
-
-          <WorkspaceSettings />
-        </div>
+        {showWorkspaceControls ? (
+          <div className="flex items-center border-b-2 pb-2">
+            <WorkspaceSwitcher />
+            <WorkspaceSettings />
+          </div>
+        ) : null}
 
         {(() => {
           switch (contentType) {
