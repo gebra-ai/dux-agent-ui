@@ -43,19 +43,11 @@ export const ChatSettings: FC<ChatSettingsProps> = ({}) => {
     ...availableOpenRouterModels
   ]
 
-  const defaultModelConfigured = !!process.env.NEXT_PUBLIC_DEFAULT_MODEL
-
   useEffect(() => {
     if (!chatSettings) return 
-    
-    const defaultModel = process.env.NEXT_PUBLIC_DEFAULT_MODEL as LLMID | undefined
-    const modelToUse = defaultModelConfigured
-                       ? defaultModel 
-                       : (localStorage.activeModel || chatSettings.model)
-    
-    if(modelToUse !== chatSettings.model){
-      const fullModel = allModels.find(llm => llm.modelId === modelToUse)
-      let llmid = modelToUse as LLMID
+    if(localStorage.activeModel !== chatSettings.model){
+      const fullModel = allModels.find(llm => llm.modelId === localStorage.activeModel)
+      let llmid = localStorage.activeModel as LLMID
       let model = fullModel ?? {
         model: "",
         modelName: llmid,
@@ -86,8 +78,7 @@ export const ChatSettings: FC<ChatSettingsProps> = ({}) => {
   }, [chatSettings?.model])
 
   if (!chatSettings) return null
-  
-  if (defaultModelConfigured) return null
+
 
   const fullModel = allModels.find(llm => llm.modelId === chatSettings.model)
 
