@@ -67,13 +67,3 @@ export async function GET(request: Request) {
     })
   }
 }
-
-// Add debug logs to see if this handler is being called
-export async function GETRootRedirect(request: Request) {
-  console.log("ROOT Redirect route handler executed:", request.url);
-  
-  // Forward to the locale version if this gets hit instead
-  const url = new URL(request.url)
-  // Assuming 'en' is your default locale
-  return NextResponse.redirect(`${url.origin}/en/redirect${url.search}`)
-}
