@@ -31,6 +31,13 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   const searchParams = useSearchParams()
   const workspaceId = params.workspaceid as string
 
+  // Don't render anything at all for the redirect path
+  // This will allow the /redirect/route.ts handler to work
+  if (workspaceId === "redirect") {
+    // Return nothing, not even attempting to render or fetch data
+    return null
+  }
+
   const {
     setChatSettings,
     setAssistants,
